@@ -1,9 +1,22 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+typedef enum {
+    PASS_VEHICLE,
+    STOP_VEHICLE,
+    PASS_PEDESTRIAN,
+    STOP_PEDESTRIAN
+} State;
+
+State estado;
+
 /* VARIABLES GLOBALES */
 int pressed = 0;
 
+/* DECLARACIÓN DE FUNCIONES */
+// Prototipos de funciones
+void setup();
+void FSM();
 /* INTERRUPCIONES */
 // Interrupción para el botón
 ISR(INT0_vect){
@@ -21,6 +34,7 @@ int main(void) {
   sei();    // Habilitar interrupciones
 
   while (1) {
+    FSM();
   }
 }
 
@@ -60,4 +74,20 @@ void setup(){
 
   // Habilitar la interrupción por desbordamiento del Timer0
   TIMSK |= (1 << TOIE0);
+}
+
+void FSM(){
+  switch (estado){
+    case (PASS_VEHICLE):
+      break;
+    case (STOP_VEHICLE):
+      break;
+    case (PASS_PEDESTRIAN):
+      break;
+    case (STOP_PEDESTRIAN):
+      break;
+    default:
+      estado = PASS_VEHICLE;
+      break;
+  }
 }
