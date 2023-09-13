@@ -35,6 +35,7 @@ void setup();
 void FSM();
 inline void interruptionRoutine();  
 inline void blinkingRoutine();  
+inline void resetTimeAndCycles(); 
 
 /* INTERRUPCIONES */
 // Interrupción para el botón
@@ -44,7 +45,7 @@ ISR(INT0_vect){
 
 // Interrupción del temporizador
 ISR (TIMER0_OVF_vect){
-
+    interruptionRoutine();
 }
 /* MAIN */
 // Bucle principal
@@ -97,14 +98,84 @@ void setup(){
 
 void FSM(){
   switch (estado){
+    // Estado donde los vehículos pueden pasar
     case (PASS_VEHICLE):
+      // Configurar las luces del semáforo para el paso de vehículos
+      PORTB = (0<<PB3)|(1<<PB2)|(0<<PB1)|(1<<PB0);
+      // Si se presiona el botón y han pasado 10 segundos, cambie al estado BLINK_VEHICLE
+      if((pressed == 1) && (seconds >= TEN_SECONDS)){
+        // Llamar a la función para reiniciar el tiempo y los ciclos
+        resetTimeAndCycles();
+        // Cambiar estado a BLINK_VEHICLE
+        estado = BLINK_VEHICLE;
+      }
+     break;
+
+    // Estado donde la luz para vehículos parpadea
+    case (BLINK_VEHICLE):
+      // Si han pasado 3 segundos y estamos en un ciclo de medio segundo o un segundo completo,
+      // cambiar al estado STOP_VEHICLE
+      if((seconds >= THREE_SECONDS) && (timerCycles == HALF_SECOND_CYCLE || timerCycles == FULL_SECOND_CYCLE)){
+        // Llamar a la función para reiniciar el tiempo y los ciclos
+        resetTimeAndCycles();
+        // Cambiar estado a STOP_VEHICLE
+        estado = STOP_VEHICLE;
+      }
       break;
+
+    // Estado donde los vehículos deben detenerse
     case (STOP_VEHICLE):
+      // Configurar las luces del semáforo para detener vehículos
+      PORTB = (0<<PB3)|(1<<PB2)|(1<<PB1)|(0<<PB0);
+      // Si ha pasado un segundo, cambiar al estado PASS_PEDESTRIAN
+      if (seconds >= ONE_SECOND){
+        // Llamar a la función para reiniciar el tiempo y los ciclos
+        resetTimeAndCycles();
+        // Cambiar estado a PASS_PEDESTRIAN
+        estado = PASS_PEDESTRIAN;
+      }
       break;
+
+    // Estado donde los peatones pueden pasar
     case (PASS_PEDESTRIAN):
+      // Configurar las luces del semáforo para el paso de peatones
+      PORTB = (1<<PB3)|(0<<PB2)|(1<<PB1)|(0<<PB0);
+      // Si han pasado 10 segundos, cambiar al estado BLINK_PEDESTRIAN
+      if(seconds >= TEN_SECONDS){
+        // Llamar a la función para reiniciar el tiempo y los ciclos
+        resetTimeAndCycles();
+        // Cambiar estado a BLINK_PEDESTRIAN
+        estado = BLINK_PEDESTRIAN;
+      }
       break;
+
+    // Estado donde la luz para peatones parpadea
+    case (BLINK_PEDESTRIAN):
+      // Si han pasado 3 segundos y estamos en un ciclo de medio segundo o un segundo completo,
+      // cambiar al estado STOP_PEDESTRIAN
+      if((seconds >= THREE_SECONDS) && (timerCycles == HALF_SECOND_CYCLE || timerCycles == FULL_SECOND_CYCLE)){
+        // Llamar a la función para reiniciar el tiempo y los ciclos
+        resetTimeAndCycles();
+        // Cambiar estado a STOP_PEDESTRIAN
+        estado = STOP_PEDESTRIAN;
+      }
+      break;
+
+    // Estado donde los peatones deben detenerse
     case (STOP_PEDESTRIAN):
+      // Configurar las luces del semáforo para detener peatones
+      PORTB = (0<<PB3)|(1<<PB2)|(1<<PB1)|(0<<PB0);
+      // Si ha pasado un segundo, cambiar al estado PASS_VEHICLE
+      if(seconds >= ONE_SECOND){
+        // Llamar a la función para reiniciar el tiempo y los ciclos
+        resetTimeAndCycles();
+        // Resetear el estado de "pressed" a 0
+        pressed = 0;
+        // Cambiar estado a PASS_VEHICLE
+        estado = PASS_VEHICLE;
+      }
       break;
+    // Estado predeterminado
     default:
       estado = PASS_VEHICLE;
       break;
@@ -151,4 +222,11 @@ inline void interruptionRoutine(){
     // Incrementar el contador de ciclos del temporizador
     timerCycles++;
   }
+}
+// Función para reiniciar el contador de tiempo y ciclos
+inline void resetTimeAndCycles() {
+  // Reiniciar el contador de ciclos del temporizador
+  timerCycles = TIMER_CYCLES_RESET;
+  // Reiniciar el contador de segundos
+  seconds = TIMER_CYCLES_RESET;
 }
