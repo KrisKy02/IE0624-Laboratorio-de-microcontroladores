@@ -1,0 +1,143 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+% Document config
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{minted,xcolor}
+\usemintedstyle{tango}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage[nottoc]{tocbibind}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{lineno}
+\usepackage{fancyvrb}
+\usepackage{minted}
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages} %para importar paginas de un pdf
+\usepackage{multirow}
+\addto\captionsspanish{\renewcommand{\listtablename}{Índice de tablas}}		% Cambiar nombre a lista de tablas   
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}					% Cambiar nombre a tablas
+\usepackage{float}		% Para ubicar las tablas y figuras justo después del texto
+\usepackage{pdfpages}
+\usepackage{enumerate}%listas y viñetas
+
+\usepackage{parskip}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+\usepackage{hyperref}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{
+{
+
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[anchor=north west, %anchor is upper left corner of the graphic
+            xshift=3cm, %shifting around
+            yshift=-4cm] 
+            at (current page.north west) %left upper corner of the page
+        {\includegraphics[height=1.3cm]{logoEIE.png}}; 
+    \end{tikzpicture}
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[anchor=north east, %anchor is upper left corner of the graphic
+            xshift=-2.5cm, %shifting around
+            yshift=-4cm] 
+            at (current page.north east) %left upper corner of the page
+        {\includegraphics[height=1.3cm]{logoUCR.png}}; 
+    \end{tikzpicture}
+    \Large 
+        \textbf{Universidad de Costa Rica}\\
+        Facultad de Ingeniería\\
+        Escuela de Ingeniería Eléctrica\\~\\ \vspace{2cm}
+        \texttt{IE-0624}\\Laboratorio de Microcontroladores \\
+    }
+    ~\\~\\
+    {\LARGE \textbf{Laboratorio \#2 \vspace{0cm}}}}
+    
+\author{Fernando Jiménez Ureña B74020\\ Kristel Herrera Rodríguez C13769\\}
+\\
+\date{II ciclo\\Septiembre 2023 } 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{14.49998pt}
+
+\lhead{IE0624-Laboratorio de Microcontroladores}
+\chead{}
+\rhead{Laboratorio \#2}
+\lfoot{Universidad de Costa Rica}
+\cfoot{\thepage}
+\rfoot{Escuela de Ingeniería Eléctrica}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+\thispagestyle{empty}%%no formato a la portada
+\renewcommand{\thepage}{\roman{page}}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+\renewcommand{\thepage}{\arabic{page}} 
+\setcounter{page}{1}
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\input{Resumen}
+
+
+\newpage
+
+\input{Nota_teorica}
+
+\newpage
+
+\input{Desarrollo}
+
+\newpage
+
+\section{Conclusiones y Recomendaciones}
+
+\begin{itemize}
+    \item  El diseño del circuito demostró ser eficaz y económico, optimizando la corriente de los LEDs y minimizando el ruido y los efectos de rebote en los botones. La selección de resistencias y el uso de un circuito RC contribuyeron al rendimiento óptimo del sistema.
+    \item La funcionalidad de la máquina de estados se validó a través de pruebas con un osciloscopio, confirmándose que las transiciones de estado y la duración de los estados fueron las esperadas. No se observaron ruidos ni falsas transiciones.
+    \item Se logró cumplir de manera correcta el diagrama de temporización propuesto en el enunciado del laboratorio
+    \item Se logró construir un diseño funcional para el microcontrolador ATtiny4313, logrando así conocer sus funcionalidades y características.
+\end{itemize}
+ 
+
+
+
+
+
+
+\newpage
+\bibliographystyle{IEEEtran}
+
+\bibliography{bibliografia.bib}
+
+
+\newpage
+
+\section{Apéndices}
+
+\begin{figure}[H]
+    \centering
+    \center
+    \includegraphics[width=0.9\textwidth]{}
+    \caption{Descripción arquitectónica. Creación propia.}
+    \label{1}
+\end{figure}
+
+\end{document}
