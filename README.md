@@ -25,3 +25,8 @@
    ```
    st-flash --reset write lab4.bin 0x8000000
    ```
+5. **Ejecución del script Python:**  
+Para ejecutar el script relacionado con IOT, utilice el siguiente comando:
+   ```
+   python3 IOT.py
+   ```
