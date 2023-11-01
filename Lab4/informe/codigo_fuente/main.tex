@@ -1,0 +1,184 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+% Document config
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{minted,xcolor}
+\usemintedstyle{tango}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage[nottoc]{tocbibind}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{lineno}
+\usepackage{pdfpages}
+\usepackage{titlesec}
+\usepackage{fancyvrb}
+\usepackage{minted}
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages} %para importar paginas de un pdf
+\usepackage{multirow}
+\addto\captionsspanish{\renewcommand{\listtablename}{Índice de tablas}}		% Cambiar nombre a lista de tablas   
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}					% Cambiar nombre a tablas
+\usepackage{float}		% Para ubicar las tablas y figuras justo después del texto
+\usepackage{pdfpages}
+\usepackage{enumerate}%listas y viñetas
+
+\usepackage{parskip}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\hypersetup{
+    breaklinks=true, % permitir la ruptura de enlaces a través de líneas
+    colorlinks=true, % colorear enlaces
+    urlcolor=blue,   % color del enlace URL
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{
+{
+
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[anchor=north west, %anchor is upper left corner of the graphic
+            xshift=3cm, %shifting around
+            yshift=-4cm] 
+            at (current page.north west) %left upper corner of the page
+        {\includegraphics[height=1.3cm]{logoEIE.png}}; 
+    \end{tikzpicture}
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[anchor=north east, %anchor is upper left corner of the graphic
+            xshift=-2.5cm, %shifting around
+            yshift=-4cm] 
+            at (current page.north east) %left upper corner of the page
+        {\includegraphics[height=1.3cm]{logoUCR.png}}; 
+    \end{tikzpicture}
+    \Large 
+        \textbf{Universidad de Costa Rica}\\
+        Facultad de Ingeniería\\
+        Escuela de Ingeniería Eléctrica\\~\\ \vspace{2cm}
+        \texttt{IE-0624}\\Laboratorio de Microcontroladores \\
+    }
+    ~\\~\\
+    {\LARGE \textbf{Laboratorio \#4: \\ STM32: GPIO, ADC, comunicaciones, Iot \vspace{0cm}}}}
+    
+\author{Fernando Jiménez Ureña B74020\\ Kristel Herrrera Rodríguez C13769}
+\\
+\date{II ciclo\\Octubre 2023 } 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{14.49998pt}
+
+\lhead{IE0624-Laboratorio de Microcontroladores}
+\chead{}
+\rhead{Laboratorio \#4}
+\lfoot{Universidad de Costa Rica}
+\cfoot{\thepage}
+\rfoot{Escuela de Ingeniería Eléctrica}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+\thispagestyle{empty}%%no formato a la portada
+\renewcommand{\thepage}{\roman{page}}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+\renewcommand{\thepage}{\arabic{page}} 
+\setcounter{page}{1}
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Resumen}
+
+En el presente reporte y laboratorio, se llevó a cabo el diseño y la implementación de un sismógrafo digital utilizando el microcontrolador STM32F429 y la biblioteca libopencm3, con el fin de registrar y estudiar las oscilaciones en el edificio de la Escuela de Ingeniería Eléctrica. El diseño integra la lectura de los ejes (X, Y, Z) del giroscopio y presenta la funcionalidad de habilitar o deshabilitar las comunicaciones por USART/USB. 
+
+Además el sismógrafo tiene la capacidad de monitorear el nivel de la batería, cuyo rango se extiende de 0 a 9 V. En situaciones donde el nivel de batería se aproxima al límite mínimo de operación del microcontrolador (7V), el sistema activa un LED de alarma y envía una notificación de batería baja al dashboard de ThingsBoard.
+
+Los resultados del monitoreo, incluyendo los valores del giroscopio y el nivel de batería, así como el estado de las comunicaciones, son desplegados en una pantalla LCD. Además, se desarrolló un script en Python capaz de leer y escribir al puerto serial/USB, facilitando la transmisión de estos datos a un dashboard en ThingsBoard. Este último se configuró para visualizar la información relevante, proporcionando una interfaz intuitiva y accesible para el análisis de los datos recopilados.
+
+Este laboratorio  permitió ademas la oportunidad de estudiar sobre el internet de las cosas mediante la paltaforma de ThingsBoard, logrando así aprender sobre las aplicaciones de de monitoreo y análisis de datos en tiempo real.
+
+
+
+
+
+
+
+
+
+
+Dirección del repositorio: \url{https://tinyurl.com/bdfb978w}
+
+
+\newpage
+
+\input{Nota_Teorica}
+
+\newpage
+
+\input{Desarrollo}
+
+\newpage
+
+\section{Conclusiones y Recomendaciones}
+
+\subsection{Conclusiones}
+
+\begin{itemize}
+
+\item El desarrollo y puesta en marcha del sismógrafo se completó con éxito mediante la integración del Microcontrolador STM32F429 Discovery kit y el apoyo de la biblioteca \textit{libopencm3}.
+
+\item La conexión entre el sismógrafo y la plataforma de IoT Thingsboard se estableció exitosamente usando un script de \textit{Python}.
+
+\item La implementación del sistema demostró la versatilidad y potencial de los microcontroladores STM32F429 en aplicaciones de monitoreo y recolección de datos en tiempo real.
+
+\item El uso de la plataforma de IoT Thingsboard permitió una visualización efectiva y en tiempo real de los datos recogidos, mostrando la importancia de las plataformas de IoT en la era digital.
+
+\item La combinación de hardware y software utilizado en este proyecto evidencia que es posible desarrollar sistemas de monitoreo eficientes y asequibles con tecnología disponible en el mercado.
+
+
+\end{itemize}
+
+\subsection{Recomendaciones}
+
+
+\begin{itemize}
+
+\item Es recomendable experimentar con diversas combinaciones de resistencias hasta alcanzar la tensión adecuada que garantice el óptimo desempeño del microcontrolador.
+
+\item Para asegurar la correcta lectura de todas las bibliotecas requeridas, se sugiere trabajar con la biblioteca \textit{libopencm3}. Además, es aconsejable implementar y ejecutar el código del sismógrafo dentro de las carpetas de \textit{libopencm3-examples}.
+
+\item Para facilitar la implementación y acelerar el proceso de desarrollo, es beneficioso tomar como referencia los ejemplos previamente establecidos en \textit{libopencm3-examples}.
+
+
+\end{itemize}
+
+\newpage
+
+
+\bibliographystyle{IEEEtran}
+
+\bibliography{bibliografia.bib}
+
+\newpage
+
+\section{Apéndices}
+\appendix
+
+
+
+\end{document}
