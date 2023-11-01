@@ -243,3 +243,155 @@ static uint16_t read_adc_naiive(uint8_t channel)
     uint16_t reg16 = adc_read_regular(ADC1);          // Lee el valor convertido
     return reg16;                                     // Devuelve el valor
 }
+
+// Controla el comportamiento de los LEDs en función del nivel de la batería y si se están enviando datos o no
+void handle_leds(float bateria_lvl, bool enviar) {
+    if (enviar) {
+        gpio_toggle(GPIOG, GPIO13);                   // Si se está enviando datos, hace parpadear el LED de transmisión
+    } else {
+        gpio_clear(GPIOG, GPIO13);                    // Si no se están enviando datos, apaga el LED de transmisión
+    }
+
+    if (bateria_lvl < 7) {
+        gpio_toggle(GPIOG, GPIO14);                   // Si el nivel de batería es bajo, hace parpadear el LED de batería
+    } else {
+        gpio_clear(GPIOG, GPIO14);                    // Si el nivel de batería es suficiente, apaga el LED de batería
+    }
+}
+
+// Envía los datos de la lectura del giroscopio y del nivel de batería a la consola
+void send_data(gyro lectura, float bateria_lvl) {
+    print_decimal(lectura.x);                         // Imprime el valor en X del giroscopio
+    console_puts("\t");                               // Tabulador
+    print_decimal(lectura.y);                         // Imprime el valor en Y del giroscopio
+    console_puts("\t");                               // Tabulador
+    print_decimal(lectura.z);                         // Imprime el valor en Z del giroscopio
+    console_puts("\t");                               // Tabulador
+    print_decimal(bateria_lvl);                       // Imprime el nivel de batería
+    console_puts("\n");                               // Salto de línea
+
+    handle_leds(bateria_lvl, true);                   // Activa la función para controlar los LEDs indicando que se están enviando datos
+}
+// Función para mostrar los datos en la pantalla LCD
+void display_data(gyro lectura, float bateria_lvl, bool enviar) {
+    char display_str[50];
+    
+    // Limpiar la pantalla y configurar el texto
+    gfx_fillScreen(LCD_WHITE);
+    gfx_setTextSize(2);
+
+    // Nivel de batería en color negro
+    gfx_setTextColor(LCD_BLACK, LCD_WHITE);
+    sprintf(display_str, "Bateria: %.2f V", bateria_lvl);
+    gfx_setCursor(5, 30);
+    gfx_puts(display_str);
+
+    // Decidir sobre el color de la representación gráfica de la batería
+    uint16_t color;
+    if (bateria_lvl >= 8.5) {
+        color = LCD_GREEN;
+    } else if (bateria_lvl >= 7) {
+        color = LCD_GREEN;
+    } else if (bateria_lvl >= 3) {
+        color = LCD_YELLOW;
+    } else {
+        color = LCD_RED;
+    }
+
+    // Ubicación y dimensiones de la representación gráfica de la batería
+    int battery_x = 40, battery_y = 60;
+    int battery_width = 60, battery_height = 10;
+
+    gfx_drawRect(battery_x, battery_y, battery_width, battery_height, LCD_BLACK);  // Contorno de la batería
+
+    float battery_percentage = (bateria_lvl - 2.0) / (8.5 - 2.0);  // Normalizar batería entre 2V a 8.5V
+    int fill_width = battery_percentage * battery_width;
+
+    gfx_fillRect(battery_x+1, battery_y+1, fill_width-2, battery_height-2, color);  // Relleno de la batería
+
+    // Mostrar información del sismógrafo
+    gfx_setTextColor(LCD_BLACK, LCD_WHITE);
+    gfx_setCursor(23, 90);
+    gfx_puts(" Sismografo ");		
+
+    // Eje X en color rojo
+    gfx_setTextColor(LCD_RED, LCD_WHITE);
+    sprintf(display_str, "Eje X: %d", lectura.x);
+    gfx_setCursor(20, 130);
+    gfx_puts(display_str);
+
+    // Eje Y en color verde
+    gfx_setTextColor(LCD_GREEN, LCD_WHITE);
+    sprintf(display_str, "Eje Y: %d", lectura.y);
+    gfx_setCursor(20, 170);
+    gfx_puts(display_str);
+
+    // Eje Z en color azul
+    gfx_setTextColor(LCD_BLUE, LCD_WHITE);
+    sprintf(display_str, "Eje Z: %d", lectura.z);
+    gfx_setCursor(20, 210);
+    gfx_puts(display_str);
+
+    // Mostrar estado de transmisión
+    gfx_setTextColor(LCD_BLACK, LCD_WHITE);
+    gfx_setCursor(3, 250);
+    gfx_puts("Trasmitiendo: ");
+    gfx_setCursor(205, 250);
+    gfx_puts(enviar ? "Si" : "No");
+    
+    handle_leds(bateria_lvl, enviar);
+
+    lcd_show_frame();
+}
+
+// Función para inicializar todo el sistema
+void initialize_system(void) {
+    console_setup(115200);
+    clock_setup();
+    rcc_periph_clock_enable(RCC_USART1);
+    rcc_periph_clock_enable(RCC_ADC1);
+    gpio_setup();
+    adc_setup();
+    sdram_init();
+    usart_setup();
+    spi_setup();
+    lcd_spi_init();
+    gfx_init(lcd_draw_pixel, 240, 320);
+}
+// Función de retardo utilizando un bucle y la instrucción 'nop' (no operación).
+void delay(void) {
+    for (int i = 0; i < 80000; i++) {
+        __asm__("nop");
+    }
+}
+
+// Función principal del programa
+int main(void) {
+    gyro lectura;
+    float bateria_lvl;
+    uint16_t input_adc0;
+    bool enviar = false;
+
+    initialize_system();
+
+    // Bucle principal del programa
+    while (1) {
+        lectura = read_xyz();  // Lee datos del giroscopio.
+        gpio_set(GPIOC, GPIO1);
+        input_adc0 = read_adc_naiive(3);  // Lee el valor del ADC del canal 3
+        bateria_lvl = (input_adc0 * 9.0f) / 4095.0f;  // Convierte la lectura del ADC a un voltaje.
+
+        display_data(lectura, bateria_lvl, enviar);  // Muestra la data en la pantalla LCD.
+
+        if (enviar) send_data(lectura, bateria_lvl);  // Si 'enviar' es verdadero, envía los datos.
+
+        handle_leds(bateria_lvl, enviar);  // Maneja los LEDs en base al nivel de batería y el estado de 'enviar'.
+
+        if (gpio_get(GPIOA, GPIO0)) {  // Si el GPIO0 del puerto A está alto, se alterna el estado de 'enviar'.
+            enviar = !enviar;
+        }
+
+        delay();  // Retardo para no saturar el bucle.
+    }
+    return 0;  // Retorna 0 (aunque en realidad nunca llegará a esta línea ya que el bucle anterior es infinito).
+}
